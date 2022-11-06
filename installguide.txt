@@ -12,7 +12,7 @@ fdisk /dev/sda
 	n
 	default
 	default
-	+2G # size of swap
+	+4G # size of swap
 
 	n
 	default
@@ -50,7 +50,7 @@ hwclock --systohc
 pacman -S vim
 
 vim /etc/locale.gen
-	#uncomment en_GB
+	# uncomment en_GB
 locale-gen
 
 vim /etc/hostname
@@ -61,17 +61,17 @@ vim /etc/hosts
 	::1		localhost
 	127.0.1.1	arch.localdomain	arch
 
-passwd #add root password
+passwd # add root password
 
-useradd -m username
-passwd username
+useradd -m USERNAME
+passwd USERNAME 
 
 usermod -aG wheel,audio,video,optical,storage username
 
 pacman -S sudo
 
 EDITOR=vim visudo
-	#uncomment line: %wheel ALL=(ALL:ALL) ALL
+	# uncomment line: %wheel ALL=(ALL:ALL) ALL
 
 pacman -S grub
 pacman -S efibootmgr dosfstools os-prober mtools
@@ -105,14 +105,14 @@ which st
 cd dwm
 sudo vim config.h
 	# edit terminal from /bin/sh
-	# to /user/local/bin/st
+	# to /usr/local/bin/st
 sudo make clean install
 
 cd dmenu
 sudo make clean install
 
 xrandr # to see available resolutions
-cp /etc/X11/xinit/xinitrc /home/leonis/.xinitrc
+cp /etc/X11/xinit/xinitrc /home/USERNAME/.xinitrc
 vim .xinitrc
 	# go to end
 	# delete last 5 lines
