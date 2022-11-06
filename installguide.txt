@@ -1,0 +1,130 @@
+timedatectl set-ntp true
+timedatectl status
+
+fdisk -l
+fdisk /dev/sda
+	g
+	n
+	default
+	default
+	+550M
+
+	n
+	default
+	default
+	+2G # size of swap
+
+	n
+	default
+	default
+	default # remaining disk space
+
+	t
+	1 # partition
+	1 # EFI
+
+	t
+	2
+	19 # swap
+
+	w
+
+mkfs.fat -F32 /dev/sda1
+
+mkswap /dev/sda2
+swapon
+
+mkfs.ext4 /dev/sda3
+mount /dev/sda3 /mnt
+
+pacstrap /mnt base linux linux-firmware
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
+hwclock --systohc
+
+pacman -S vim
+
+vim /etc/locale.gen
+	#uncomment en_GB
+locale-gen
+
+vim /etc/hostname
+	# insert hostname e.g. arch
+
+vim /etc/hosts
+	127.0.0.1	localhost
+	::1		localhost
+	127.0.1.1	arch.localdomain	arch
+
+passwd #add root password
+
+useradd -m username
+passwd username
+
+usermod -aG wheel,audio,video,optical,storage username
+
+pacman -S sudo
+
+EDITOR=vim visudo
+	#uncomment line: %wheel ALL=(ALL:ALL) ALL
+
+pacman -S grub
+pacman -S efibootmgr dosfstools os-prober mtools
+
+mkdir /boot/EFI
+mount /dev/sda1 /boot/EFI
+grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+grub-mkconfig -o /boot/grub/grub.cfg
+
+pacman -S networkmanager git
+
+systemctl enable NetworkManager
+
+exit
+
+umount -R /mnt
+shutdown now
+
+sudo pacman -S base-devel
+
+git clone https://git.suckless.org/dwm
+git clone https://git.suckless.org/dmenu
+git clone https://git.suckless.org/st
+
+sudo pacman -S xorg xorg-xinit libx11 libxinerama libxft webkit2gtk nitrogen picom firefox
+
+cd st
+sudo make clean install
+
+which st
+cd dwm
+sudo vim config.h
+	# edit terminal from /bin/sh
+	# to /user/local/bin/st
+sudo make clean install
+
+cd dmenu
+sudo make clean install
+
+xrandr # to see available resolutions
+cp /etc/X11/xinit/xinitrc /home/leonis/.xinitrc
+vim .xinitrc
+	# go to end
+	# delete last 5 lines
+	nitrogen --restore &
+	picom &
+	exec dwm
+	xrandr -s # add resolution
+
+
+cd ~
+vim .bash_profile
+	startx
+
+sudo reboot
+
